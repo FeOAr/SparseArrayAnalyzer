@@ -1,11 +1,10 @@
 /*
- * @Author: FeOAr feoar@outlook.com
- * @Date: 2025-06-30 20:46:31
- * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-06-30 21:23:07
- * @FilePath: \SparseArrayAnalyzer\core\inc\sparse_array_analyzer.h
- * @Description:
- *
+ * @Author: 赵航锐 esnasc@163.com
+ * @Date: 2025-07-01 09:17:20
+ * @LastEditors: 赵航锐 esnasc@163.com
+ * @LastEditTime: 2025-07-01 09:35:23
+ * @FilePath: \draft\cpp\SparseArray\core\inc\sparse_array_analyzer.h
+ * @Description: 
  */
 
 #ifndef _SPARSE_ARRAY_ANALYZER_H_
@@ -16,6 +15,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <functional>
 
 // 统一分析结果
 struct CalResult
