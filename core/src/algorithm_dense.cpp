@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 21:28:22
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 15:50:12
+ * @LastEditTime: 2025-07-06 18:34:27
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dense.cpp
  * @Description: 
  * 
@@ -13,21 +13,21 @@
 class DenseStorage : public SparseArrayCompressor
 {
 public:
-    bool Compress(const std::vector<uint32_t> &input) override
+    int8_t Compress(const std::vector<uint32_t> &input) override
     {
         auto start = std::chrono::high_resolution_clock::now();
-        data_ = input;
+        _inputData = input;
         auto end = std::chrono::high_resolution_clock::now();
 
-        result_.compressedElementCount = static_cast<uint32_t>(data_.size());
-        result_.compressedSizeBytes = static_cast<uint32_t>(data_.size() * sizeof(uint32_t));
+        result_.compressedElementCount = static_cast<uint32_t>(_inputData.size());
+        result_.compressedSizeBytes = static_cast<uint32_t>(_inputData.size() * sizeof(uint32_t));
         result_.compressTimeMs = std::chrono::duration<double, std::milli>(end - start).count();
         return true;
     }
 
-    std::vector<uint32_t> Decompress() const override
+    int8_t Decompress(std::vector<uint32_t> &input) override
     {
-        return data_;
+        return 0;
     }
 
     CalResult GetResult() const override
@@ -36,15 +36,17 @@ public:
     }
 
 private:
-    std::vector<uint32_t> data_;
+    std::vector<uint32_t> _inputData;
     CalResult result_;
 };
 
 // 注册到工厂（在 main 或注册器中调用）
 // TODO：这种机制保证只注册一次
+#if 0
 static bool dense_registered = []
 {
     CompressorRegistry::Instance().Register("DenseArray", []
                                             { return std::make_unique<DenseStorage>(); });
     return true;
 }();
+#endif

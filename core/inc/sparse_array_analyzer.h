@@ -2,7 +2,7 @@
  * @Author: 赵航锐 esnasc@163.com
  * @Date: 2025-07-01 09:17:20
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 15:45:27
+ * @LastEditTime: 2025-07-06 18:30:58
  * @FilePath: \SparseArrayAnalyzer\core\inc\sparse_array_analyzer.h
  * @Description: 
  */
@@ -42,7 +42,7 @@ auto decompressed = compressor->Decompress();
 /* ----------------------------------- end ---------------------------------- */
 
 // 统一分析结果
-struct CalResult
+typedef struct cal_result
 {
     //TODO: C++17的结构体成员初始化
     // 名字在map中充当key
@@ -60,7 +60,7 @@ struct CalResult
 
     // Compression ratio
     double compressionRatio = 0.0;
-};
+}CalResult;
 
 // 接口定义
 class SparseArrayCompressor
@@ -69,10 +69,10 @@ public:
     virtual ~SparseArrayCompressor() = default;
 
     // 压缩主入口
-    virtual bool Compress(const std::vector<uint32_t> &input) = 0;
+    virtual int8_t Compress(const std::vector<uint32_t> &input) = 0;  // TODO: const + 引用传递
 
     // 解压主入口
-    virtual std::vector<uint32_t> Decompress() const = 0;
+    virtual int8_t Decompress(std::vector<uint32_t> &input) = 0;
 
     // 获取压缩结果
     virtual CalResult GetResult() const = 0;

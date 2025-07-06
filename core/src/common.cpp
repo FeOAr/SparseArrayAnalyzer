@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 #include <filesystem>
+#include <stdexcept>
+#include <cstring>
 
 std::vector<uint32_t> loadArrayFromTxt(const std::string &filename)
 {
@@ -46,7 +48,67 @@ std::vector<uint32_t> loadArrayFromTxt(const std::string &filename)
     return data;
 }
 
-void printVector(const std::vector<uint32_t> &vec, size_t elemsPerLine)
+uint32_t parseInt(const char *str)
+{
+    try
+    {
+        size_t idx;
+        uint32_t value = std::stoi(str, &idx);
+        if (idx != std::strlen(str))
+        {
+            throw std::invalid_argument("Non-integer characters detected");
+        }
+        return value;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Invalid integer input: " << str << " (" << e.what() << ")\n";
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+int8_t reshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const uint32_t col, std::vector<std::vector<uint32_t>> &output)
+{
+    if (input.empty())
+    {
+        std::cerr << "Error: Input data is empty.\n";
+        return ERROR_INPUT_EMPTY;
+    }
+
+    if (row == 0 || col == 0)
+    {
+        std::cerr << "Error: Row or column size cannot be zero.\n";
+        return ERROR_PARAM_INVALID;
+    }
+
+    if (row * col != input.size())
+    {
+        std::cerr << "Error: The specified dimensions is not compatible with the input data size.\n";
+        return ERROR_PARAM_INVALID;
+    }
+
+    output.clear();
+    output.resize(row, std::vector<uint32_t>(col, 0));
+
+    size_t index = 0;
+    for (uint32_t rowIdx = 0; rowIdx < row; ++rowIdx)
+    {
+        for (uint32_t colIdx = 0; colIdx < col; ++colIdx)
+        {
+            if (index < input.size())
+            {
+                output[rowIdx][colIdx] = input[index++];
+            }
+            else
+            {
+                output[rowIdx][colIdx] = 0; // 填充剩余部分为0
+            }
+        }
+    }
+    return SAA_SUCCESS;
+}
+
+void printVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
 {
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
     std::cout << "Array content (size = " << vec.size() << "):\n{\n    ";
@@ -66,6 +128,27 @@ void printVector(const std::vector<uint32_t> &vec, size_t elemsPerLine)
         {
             std::cout << " ";
         }
+    }
+    std::cout << "\n}\n";
+    std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
+}
+
+void printVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_t row, const uint32_t col)
+{
+    std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
+    printf("2D Array content (size = %ux%u):\n{\n", row, col);
+    size_t index = 0;
+    for (uint32_t rowIdx = 0; rowIdx < row; ++rowIdx)
+    {
+        for (uint32_t colIdx = 0; colIdx < col; ++colIdx)
+        {
+            std::cout << std::setw(8) << data[rowIdx][colIdx];
+            if (index != data.size() - 1)
+            {
+                std::cout << ",";
+            }
+        }
+        std::cout << "\n";
     }
     std::cout << "\n}\n";
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
