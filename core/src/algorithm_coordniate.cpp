@@ -2,15 +2,13 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-02 20:48:15
+ * @LastEditTime: 2025-07-06 15:49:35
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_coordniate.cpp
  * @Description:
  *
  */
 #include "sparse_array_analyzer.h"
 #include <chrono>
-
-static std::string algorithmName("CoordinateList");
 
 class CoordinateList : public SparseArrayCompressor
 {
@@ -33,7 +31,6 @@ bool CoordinateList::Compress(const std::vector<uint32_t> &input)
 
     auto end = std::chrono::high_resolution_clock::now();
 
-    result_.algorithmName = algorithmName;
     result_.compressedElementCount = static_cast<uint32_t>(data_.size());
     result_.compressedSizeBytes = static_cast<uint32_t>(data_.size() * sizeof(uint32_t));
     result_.compressTimeMs = std::chrono::duration<double, std::milli>(end - start).count();
@@ -44,7 +41,7 @@ bool CoordinateList::Compress(const std::vector<uint32_t> &input)
 // TODO：这种机制保证只注册一次
 static bool coord_registered = []
 {
-    CompressorRegistry::Instance().Register(algorithmName, []
+    CompressorRegistry::Instance().Register("CoordinateList", []
                                             { return std::make_unique<CoordinateList>(); });
     return true;
 }();

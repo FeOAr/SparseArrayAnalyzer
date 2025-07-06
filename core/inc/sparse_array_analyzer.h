@@ -2,7 +2,7 @@
  * @Author: 赵航锐 esnasc@163.com
  * @Date: 2025-07-01 09:17:20
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-02 20:43:44
+ * @LastEditTime: 2025-07-06 15:45:27
  * @FilePath: \SparseArrayAnalyzer\core\inc\sparse_array_analyzer.h
  * @Description: 
  */
@@ -17,14 +17,49 @@
 #include <unordered_map>
 #include <functional>
 
+/* ----------------------------------- 流程 ----------------------------------- */
+#if 0
+// 1. 在某处注册算法
+CompressorRegistry::Instance().Register("CoordinateCompression", [](){
+    return std::make_unique<CoordinateCompression>();
+});
+CompressorRegistry::Instance().Register("DenseCompression", [](){
+    return std::make_unique<DenseCompression>();
+});
+
+// 2. 用户选择算法名字，创建实例
+auto compressor = CompressorRegistry::Instance().Create("CoordinateCompression");
+
+// 3. 调用压缩
+compressor->Compress(inputArray);
+
+// 4. 获取结果
+auto result = compressor->GetResult();
+
+// 5. 解压
+auto decompressed = compressor->Decompress();
+#endif
+/* ----------------------------------- end ---------------------------------- */
+
 // 统一分析结果
 struct CalResult
 {
-    std::string algorithmName;
-    uint32_t compressedElementCount = 0;
-    uint32_t compressedSizeBytes = 0;
+    //TODO: C++17的结构体成员初始化
+    // 名字在map中充当key
+    // Array element count
+    uint32_t originElementCount = 0;     // 原数组元素数量
+    uint32_t compressedElementCount = 0; // 压缩后元素数量
+
+    // Array size in bytes
+    uint32_t originSizeBytes = 0;        // 原数组大小
+    uint32_t compressedSizeBytes = 0;    // 压缩后数组大小
+
+    // Compression cost
     double compressTimeMs = 0;
     double decompressTimeMs = 0;
+
+    // Compression ratio
+    double compressionRatio = 0.0;
 };
 
 // 接口定义
@@ -56,7 +91,7 @@ public:
     std::vector<std::string> ListAlgorithms() const;
 
 private:
-    std::unordered_map<std::string, CompressorFactory> factories_;
+    std::unordered_map<std::string, CompressorFactory> _factories;
 };
 
 #endif // _SPARSE_ARRAY_ANALYZER_H_

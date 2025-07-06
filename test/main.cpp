@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-02 22:39:01
+ * @LastEditTime: 2025-07-06 15:54:28
  * @FilePath: \SparseArrayAnalyzer\test\main.cpp
  * @Description:
  *
@@ -66,12 +66,16 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        // TODO: "\n" 和 endl
         CalResult result = compressor->GetResult();
-        std::cout << mode << ":\n";
-        std::cout << "  Compressed Size : " << result.compressedSizeBytes << " bytes\n";
-        std::cout << "  Original Size   : " << result.originalBytes << " bytes\n";
-        std::cout << "  Ratio           : " << result.compressionRatio << "\n";
-        std::cout << "  Time            : " << result.elapsedUs << " us\n\n";
+        std::cout << "  Compressed Mode  : " << mode << "\n";
+        std::cout << "  Origin count     : " << result.originElementCount << "\n";
+        std::cout << "  Compressed count : " << result.compressedElementCount << "\n";
+        std::cout << "  Origin size      : " << result.originSizeBytes << " bytes\n";
+        std::cout << "  Compressed Size  : " << result.compressedSizeBytes << " bytes\n";
+        std::cout << "  Compress Time    : " << result.compressTimeMs << " us\n";
+        std::cout << "  Decompress Time  : " << result.decompressTimeMs << " us\n";
+        std::cout << "  Ratio            : " << result.compressionRatio << "\n\n";
     }
     /* ----------------------------------- end ---------------------------------- */
     return 0;

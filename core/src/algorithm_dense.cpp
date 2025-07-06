@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 21:28:22
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-02 22:34:41
+ * @LastEditTime: 2025-07-06 15:50:12
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dense.cpp
  * @Description: 
  * 
@@ -19,7 +19,6 @@ public:
         data_ = input;
         auto end = std::chrono::high_resolution_clock::now();
 
-        result_.algorithmName = "Dense";
         result_.compressedElementCount = static_cast<uint32_t>(data_.size());
         result_.compressedSizeBytes = static_cast<uint32_t>(data_.size() * sizeof(uint32_t));
         result_.compressTimeMs = std::chrono::duration<double, std::milli>(end - start).count();
