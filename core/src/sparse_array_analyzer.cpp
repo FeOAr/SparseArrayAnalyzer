@@ -11,11 +11,6 @@
 #include <stdio.h>
 #include "sparse_array_analyzer.h"
 
-void printfHelloWorld()
-{
-    printf("hello world\n");
-}
-
 CompressorRegistry &CompressorRegistry::Instance()
 {
     static CompressorRegistry instance; // 本地静态变量，只会初始化一次

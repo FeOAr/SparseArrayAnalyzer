@@ -22,41 +22,40 @@ public:
 
 private:
     ArrayDimension _arrayType;
-    std::vector<uint32_t> _inputData1D;
-    std::vector<std::vector<uint32_t>> _inputData2D;
+    ArrayData1D _inputData1D;
+    ArrayData2D _inputData2D;
     CalResult _result;
 };
 
 int8_t DenseStorage::Compress(const ArrayInput &input)
 {
     // 1. 解析数据类型
-    if (std::holds_alternative<std::vector<uint32_t>>(input))
+    if (std::holds_alternative<ArrayData1D>(input))
     {
         auto &vec = std::get<ArrayData1D>(input);
-        _inputData1D = vec.data;
+        _inputData1D = vec;
         _arrayType = ARRAY_1D;
     }
     else if (std::holds_alternative<ArrayData2D>(input))
     {
         auto &mat = std::get<ArrayData2D>(input);
-        _inputData2D = mat.data;
+        _inputData2D = mat;
         _arrayType = ARRAY_2D;
     }
     else
     {
-        std::cerr << "Error: Input data is empty.\n";
+        std::cerr << LOG_ERROR <<"Input data is empty.\n";
         return ERROR_INPUT_EMPTY;
     }
 
     // 2. 计算压缩结果
     _result.originElementCount = (_arrayType == ARRAY_1D)
-                                     ? GetArrayElemCount1D(_inputData1D)
-                                     : GetArrayElemCount2D(_inputData2D);
+                                     ? GetArrayElemCount1D(_inputData1D.arrayData)
+                                     : GetArrayElemCount2D(_inputData2D.arrayData);
     _result.compressedElementCount = _result.originElementCount;
     _result.originSizeBytes = (_arrayType == ARRAY_1D)
-                                  ? GetArrayTotalSize1D(_inputData1D)
-                                  : GetArrayTotalSize2D(_inputData2D);
-    ;
+                                  ? GetArrayTotalSize1D(_inputData1D.arrayData)
+                                  : GetArrayTotalSize2D(_inputData2D.arrayData);
     _result.compressedSizeBytes = _result.originSizeBytes;
     _result.compressTimeMs = 0;
     _result.decompressTimeMs = 0;
@@ -71,11 +70,11 @@ int8_t DenseStorage::Decompress(ArrayInput &input)
     {
         if (auto *ptr1d = std::get_if<ArrayData1D>(&input))
         {
-            ptr1d->data = _inputData1D;
+            ptr1d->arrayData = _inputData1D.arrayData;
         }
         else
         {
-            std::cerr << "Error: ArrayInput is not compatible with 1D array.\n";
+            std::cerr << LOG_ERROR << "ArrayInput is not compatible with 1D array.\n";
             return ERROR_PARAM_INVALID;
         }
     }
@@ -83,11 +82,11 @@ int8_t DenseStorage::Decompress(ArrayInput &input)
     {
         if (auto *ptr2d = std::get_if<ArrayData2D>(&input))
         {
-            ptr2d->data = _inputData2D;
+            ptr2d->arrayData = _inputData2D.arrayData;
         }
         else
         {
-            std::cerr << "Error: ArrayInput is not compatible with 2D array.\n";
+            std::cerr << LOG_ERROR << "ArrayInput is not compatible with 2D array.\n";
             return ERROR_PARAM_INVALID;
         }
     }

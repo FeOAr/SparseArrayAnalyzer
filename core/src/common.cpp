@@ -13,14 +13,14 @@ std::vector<uint32_t> LoadArrayFromTxt(const std::string &filename)
     // 路径检查
     if (!std::filesystem::exists(filename))
     {
-        std::cerr << "Error: File does not exist: " << filename << std::endl;
+        std::cerr << LOG_ERROR << "File does not exist: " << filename << std::endl;
         return data;
     }
 
     std::ifstream file(filename);
     if (!file.is_open())
     {
-        std::cerr << "Error: Failed to open file: " << filename << std::endl;
+        std::cerr << LOG_ERROR << "Failed to open file: " << filename << std::endl;
         return data;
     }
 
@@ -71,19 +71,19 @@ int8_t ReshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const
 {
     if (input.empty())
     {
-        std::cerr << "Error: Input data is empty.\n";
+        std::cerr << LOG_ERROR << "Input data is empty.\n";
         return ERROR_INPUT_EMPTY;
     }
 
     if (row == 0 || col == 0)
     {
-        std::cerr << "Error: Row or column size cannot be zero.\n";
+        std::cerr << LOG_ERROR << "Row or column size cannot be zero.\n";
         return ERROR_PARAM_INVALID;
     }
 
     if (row * col != input.size())
     {
-        std::cerr << "Error: The specified dimensions is not compatible with the input data size.\n";
+        std::cerr << LOG_ERROR << "The specified dimensions is not compatible with the input data size.\n";
         return ERROR_PARAM_INVALID;
     }
 
@@ -157,17 +157,14 @@ void PrintVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_
 uint32_t GetArrayTotalSize1D(const std::vector<uint32_t> &data)
 {
     uint32_t size = 0;
-    size = data.size() * sizeof(uint32_t);
+    size = GetArrayElemCount1D(data) * sizeof(uint32_t);
     return size;
 }
 
 uint32_t GetArrayTotalSize2D(const std::vector<std::vector<uint32_t>> &data)
 {
     uint32_t size = 0;
-    for (const auto &row : data)
-    {
-        size += row.size();
-    }
+    size = GetArrayElemCount2D(data) * sizeof(uint32_t);
     return size;
 }
 
@@ -184,4 +181,17 @@ uint32_t GetArrayElemCount2D(const std::vector<std::vector<uint32_t>> &data)
         count += static_cast<uint32_t>(row.size());
     }
     return count;
+}
+
+bool Compare2D(const std::vector<std::vector<uint32_t>> &a,
+               const std::vector<std::vector<uint32_t>> &b)
+{
+    if (a.size() != b.size())
+        return false;
+    for (size_t i = 0; i < a.size(); ++i)
+    {
+        if (a[i] != b[i])
+            return false;
+    }
+    return true;
 }

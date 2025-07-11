@@ -42,22 +42,16 @@ auto decompressed = compressor->Decompress();
 #endif
 /* ----------------------------------- end ---------------------------------- */
 
-typedef enum array_dimension
-{
-    ARRAY_1D = 0, // 一维数组
-    ARRAY_2D = 1, // 二维数组
-} ArrayDimension;
-
 struct ArrayData1D
 {
-    std::vector<uint32_t> data;
+    std::vector<uint32_t> arrayData;
 };
 
 struct ArrayData2D
 {
     uint32_t rowCount = 0;
     uint32_t colCount = 0;
-    std::vector<std::vector<uint32_t>> data;
+    std::vector<std::vector<uint32_t>> arrayData;
 };
 
 using ArrayInput = std::variant<ArrayData1D, ArrayData2D>;
