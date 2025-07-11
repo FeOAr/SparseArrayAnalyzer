@@ -2,43 +2,104 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 21:28:22
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 18:34:27
+ * @LastEditTime: 2025-07-09 21:17:59
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dense.cpp
- * @Description: 
- * 
+ * @Description:
+ *
  */
 #include "sparse_array_analyzer.h"
+#include "common.h"
 #include <chrono>
 
 class DenseStorage : public SparseArrayCompressor
 {
 public:
-    int8_t Compress(const std::vector<uint32_t> &input) override
-    {
-        auto start = std::chrono::high_resolution_clock::now();
-        _inputData = input;
-        auto end = std::chrono::high_resolution_clock::now();
+    int8_t Compress(const ArrayInput &input) override;
 
-        result_.compressedElementCount = static_cast<uint32_t>(_inputData.size());
-        result_.compressedSizeBytes = static_cast<uint32_t>(_inputData.size() * sizeof(uint32_t));
-        result_.compressTimeMs = std::chrono::duration<double, std::milli>(end - start).count();
-        return true;
-    }
+    int8_t Decompress(ArrayInput &input) override;
 
-    int8_t Decompress(std::vector<uint32_t> &input) override
-    {
-        return 0;
-    }
-
-    CalResult GetResult() const override
-    {
-        return result_;
-    }
+    int8_t GetResult(CalResult &ret) const override;
 
 private:
-    std::vector<uint32_t> _inputData;
-    CalResult result_;
+    ArrayDimension _arrayType;
+    std::vector<uint32_t> _inputData1D;
+    std::vector<std::vector<uint32_t>> _inputData2D;
+    CalResult _result;
 };
+
+int8_t DenseStorage::Compress(const ArrayInput &input)
+{
+    // 1. 解析数据类型
+    if (std::holds_alternative<std::vector<uint32_t>>(input))
+    {
+        auto &vec = std::get<ArrayData1D>(input);
+        _inputData1D = vec.data;
+        _arrayType = ARRAY_1D;
+    }
+    else if (std::holds_alternative<ArrayData2D>(input))
+    {
+        auto &mat = std::get<ArrayData2D>(input);
+        _inputData2D = mat.data;
+        _arrayType = ARRAY_2D;
+    }
+    else
+    {
+        std::cerr << "Error: Input data is empty.\n";
+        return ERROR_INPUT_EMPTY;
+    }
+
+    // 2. 计算压缩结果
+    _result.originElementCount = (_arrayType == ARRAY_1D)
+                                     ? GetArrayElemCount1D(_inputData1D)
+                                     : GetArrayElemCount2D(_inputData2D);
+    _result.compressedElementCount = _result.originElementCount;
+    _result.originSizeBytes = (_arrayType == ARRAY_1D)
+                                  ? GetArrayTotalSize1D(_inputData1D)
+                                  : GetArrayTotalSize2D(_inputData2D);
+    ;
+    _result.compressedSizeBytes = _result.originSizeBytes;
+    _result.compressTimeMs = 0;
+    _result.decompressTimeMs = 0;
+    _result.compressionRatio = 1;
+
+    return SAA_SUCCESS;
+}
+
+int8_t DenseStorage::Decompress(ArrayInput &input)
+{
+    if (_arrayType == ARRAY_1D)
+    {
+        if (auto *ptr1d = std::get_if<ArrayData1D>(&input))
+        {
+            ptr1d->data = _inputData1D;
+        }
+        else
+        {
+            std::cerr << "Error: ArrayInput is not compatible with 1D array.\n";
+            return ERROR_PARAM_INVALID;
+        }
+    }
+    else if (_arrayType == ARRAY_2D)
+    {
+        if (auto *ptr2d = std::get_if<ArrayData2D>(&input))
+        {
+            ptr2d->data = _inputData2D;
+        }
+        else
+        {
+            std::cerr << "Error: ArrayInput is not compatible with 2D array.\n";
+            return ERROR_PARAM_INVALID;
+        }
+    }
+
+    return SAA_SUCCESS;
+}
+
+int8_t DenseStorage::GetResult(CalResult &ret) const
+{
+    ret = _result;
+    return SAA_SUCCESS;
+}
 
 // 注册到工厂（在 main 或注册器中调用）
 // TODO：这种机制保证只注册一次

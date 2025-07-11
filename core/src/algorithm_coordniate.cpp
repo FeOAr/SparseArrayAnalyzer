@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 18:30:22
+ * @LastEditTime: 2025-07-09 21:18:43
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_coordniate.cpp
  * @Description:
  *
@@ -22,9 +22,9 @@ typedef struct coord_info
 class CoordinateList : public SparseArrayCompressor
 {
 public:
-    int8_t Compress(const std::vector<uint32_t> &input) override;
-    int8_t Decompress(std::vector<uint32_t> &input) override;
-    CalResult GetResult() const override { return result_; }
+    int8_t Compress(const ArrayInput &input) override;
+    int8_t Decompress(ArrayInput &input) override;
+    int8_t GetResult(CalResult &result) const override;
 
 private:
     int8_t startCompress(const std::vector<uint32_t> &input);

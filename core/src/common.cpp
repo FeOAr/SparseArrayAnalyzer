@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <cstring>
 
-std::vector<uint32_t> loadArrayFromTxt(const std::string &filename)
+std::vector<uint32_t> LoadArrayFromTxt(const std::string &filename)
 {
     std::vector<uint32_t> data;
 
@@ -48,7 +48,7 @@ std::vector<uint32_t> loadArrayFromTxt(const std::string &filename)
     return data;
 }
 
-uint32_t parseInt(const char *str)
+uint32_t ParseInt(const char *str)
 {
     try
     {
@@ -67,7 +67,7 @@ uint32_t parseInt(const char *str)
     }
 }
 
-int8_t reshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const uint32_t col, std::vector<std::vector<uint32_t>> &output)
+int8_t ReshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const uint32_t col, std::vector<std::vector<uint32_t>> &output)
 {
     if (input.empty())
     {
@@ -108,7 +108,7 @@ int8_t reshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const
     return SAA_SUCCESS;
 }
 
-void printVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
+void PrintVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
 {
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
     std::cout << "Array content (size = " << vec.size() << "):\n{\n    ";
@@ -133,7 +133,7 @@ void printVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 }
 
-void printVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_t row, const uint32_t col)
+void PrintVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_t row, const uint32_t col)
 {
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
     printf("2D Array content (size = %ux%u):\n{\n", row, col);
@@ -152,4 +152,36 @@ void printVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_
     }
     std::cout << "\n}\n";
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
+}
+
+uint32_t GetArrayTotalSize1D(const std::vector<uint32_t> &data)
+{
+    uint32_t size = 0;
+    size = data.size() * sizeof(uint32_t);
+    return size;
+}
+
+uint32_t GetArrayTotalSize2D(const std::vector<std::vector<uint32_t>> &data)
+{
+    uint32_t size = 0;
+    for (const auto &row : data)
+    {
+        size += row.size();
+    }
+    return size;
+}
+
+uint32_t GetArrayElemCount1D(const std::vector<uint32_t> &data)
+{
+    return static_cast<uint32_t>(data.size());
+}
+
+uint32_t GetArrayElemCount2D(const std::vector<std::vector<uint32_t>> &data)
+{
+    uint32_t count = 0;
+    for (const auto &row : data)
+    {
+        count += static_cast<uint32_t>(row.size());
+    }
+    return count;
 }

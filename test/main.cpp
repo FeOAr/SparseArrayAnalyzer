@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     printf("Start analyze!\n");
 
     // 原始数组
-    std::vector<uint32_t> data = loadArrayFromTxt(argv[1]);
+    std::vector<uint32_t> data = LoadArrayFromTxt(argv[1]);
     std::vector<std::vector<uint32_t>> data2D; // 用于存储二维数组
     uint32_t row = 0, col = 0;
 
@@ -46,18 +46,18 @@ int main(int argc, char *argv[])
     {
         // 一维数组
         printf("Input array is 1D array.\n");
-        printVector1D(data);
+        PrintVector1D(data);
     }
     else if (argv[ARRAY_DIMENSION] && std::string(argv[ARRAY_DIMENSION]) == "2")
     {
         // 二维数组
         printf("Input array is 2D array.\n");
-        row = parseInt(argv[ARRAY_ROW]);
-        col = parseInt(argv[ARRAY_COL]);
-        if(reshapeTo2D(data, row, col, data2D) == SAA_SUCCESS)
+        row = ParseInt(argv[ARRAY_ROW]);
+        col = ParseInt(argv[ARRAY_COL]);
+        if(ReshapeTo2D(data, row, col, data2D) == SAA_SUCCESS)
         {
             std::cout << "Reshape to 2D array successfully.\n";
-            printVector2D(data2D, row, col);
+            PrintVector2D(data2D, row, col);
         }
         else
         {
