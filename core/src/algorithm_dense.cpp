@@ -102,7 +102,7 @@ int8_t DenseStorage::GetResult(CalResult &ret) const
 
 // 注册到工厂（在 main 或注册器中调用）
 // TODO：这种机制保证只注册一次
-#if 0
+#if ALGORITHM_DENSE
 static bool dense_registered = []
 {
     CompressorRegistry::Instance().Register("DenseArray", []

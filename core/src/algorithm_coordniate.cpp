@@ -219,11 +219,11 @@ int8_t CoordinateList::GetResult(CalResult &ret) const
     return SAA_SUCCESS;
 }
 
-// 注册到工厂（在 main 或注册器中调用）
-// TODO：这种机制保证只注册一次
+#if ALGORITHM_COORDINATE
 static bool coord_registered = []
 {
     CompressorRegistry::Instance().Register("CoordinateList", []
                                             { return std::make_unique<CoordinateList>(); });
     return true;
 }();
+#endif

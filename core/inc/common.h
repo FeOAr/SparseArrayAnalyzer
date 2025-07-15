@@ -34,6 +34,19 @@
 #define ERROR_PARAM_INVALID       (-2)
 #define ERROR_UNSUPPORT_DIMENSION (-3)
 #define ERROR_CALCULATE_ERROR     (-4)
+#define ERROR_UNKNOW_ERROR        (-5)
+
+/* ---------------------------- Algorithm enable ---------------------------- */
+#define ENABLE                    (1)
+#define BYPASS                    (0)
+
+#define ALGORITHM_DENSE           (BYPASS)
+#define ALGORITHM_COORDINATE      (BYPASS)
+#define ALGORITHM_RUN_LENGTH      (BYPASS)
+#define ALGORITHM_BITMAP_PAYLOAD  (ENABLE)
+#define ALGORITHM_HASH_DICTIONARY (BYPASS)
+#define ALGORITHM_CSR             (BYPASS)
+#define ALGORITHM_CSC             (BYPASS)
 
 /* -------------------------------- function -------------------------------- */
 typedef enum array_dimension
