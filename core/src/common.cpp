@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
+#include <iomanip>
+#include <bitset>
 
 std::vector<uint32_t> LoadArrayFromTxt(const std::string &filename)
 {
@@ -108,9 +111,29 @@ int8_t ReshapeTo2D(const std::vector<uint32_t> &input, const uint32_t row, const
     return SAA_SUCCESS;
 }
 
-void PrintVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
+void PrintBuffer(const uint8_t* data, size_t size, size_t perLine)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        std::cout << "[" << std::setw(4) << std::setfill('0') << i << "]  "
+                  << "0x" << std::hex << std::uppercase << std::setw(2) << static_cast<int>(data[i]) << std::dec
+                  << "  =  " << std::bitset<8>(data[i]) << "\n";
+
+        if ((i + 1) % perLine == 0)
+            std::cout << std::endl;
+    }
+    std::cout << std::setfill(' ');  // TODO: 流填充恢复
+}
+
+void PrintBuffer(const std::vector<uint8_t>& vec, size_t perLine)
+{
+    PrintBuffer(vec.data(), vec.size(), perLine);
+}
+
+void PrintVector1D(const std::vector<uint32_t> &vec, const std::string commit, size_t elemsPerLine)
 {
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << "Array commit: " << commit << std::endl;
     std::cout << "Array content (size = " << vec.size() << "):\n{\n    ";
     for (size_t i = 0; i < vec.size(); ++i)
     {
@@ -133,9 +156,10 @@ void PrintVector1D(const std::vector<uint32_t> &vec, size_t elemsPerLine)
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 }
 
-void PrintVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_t row, const uint32_t col)
+void PrintVector2D(const std::vector<std::vector<uint32_t>> &data, const uint32_t row, const uint32_t col, const std::string commit)
 {
     std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << "Array commit: " << commit << std::endl;
     printf("2D Array content (size = %ux%u):\n{\n", row, col);
     size_t index = 0;
     for (uint32_t rowIdx = 0; rowIdx < row; ++rowIdx)

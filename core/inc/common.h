@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 19:33:17
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-09 21:07:54
+ * @LastEditTime: 2025-07-18 17:09:40
  * @FilePath: \SparseArrayAnalyzer\core\inc\common.h
  * @Description: 
  * 
@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+#include <string>
 
 /* ---------------------------------- Color --------------------------------- */
 #define COLOR_RED    "\033[0;30;41m"
@@ -35,6 +36,7 @@
 #define ERROR_UNSUPPORT_DIMENSION (-3)
 #define ERROR_CALCULATE_ERROR     (-4)
 #define ERROR_UNKNOW_ERROR        (-5)
+#define ERROR_INDEX_OUT_OF_RANGE  (-6)
 
 /* ---------------------------- Algorithm enable ---------------------------- */
 #define ENABLE                    (1)
@@ -43,8 +45,8 @@
 #define ALGORITHM_DENSE           (BYPASS)
 #define ALGORITHM_COORDINATE      (BYPASS)
 #define ALGORITHM_RUN_LENGTH      (BYPASS)
-#define ALGORITHM_BITMAP_PAYLOAD  (ENABLE)
-#define ALGORITHM_HASH_DICTIONARY (BYPASS)
+#define ALGORITHM_BITMAP_PAYLOAD  (BYPASS)
+#define ALGORITHM_DICTIONARY      (ENABLE)
 #define ALGORITHM_CSR             (BYPASS)
 #define ALGORITHM_CSC             (BYPASS)
 
@@ -59,8 +61,9 @@ std::vector<uint32_t> LoadArrayFromTxt(const std::string& filename);
 uint32_t ParseInt(const char* str);
 int8_t ReshapeTo2D(const std::vector<uint32_t>& input, const uint32_t row, const uint32_t col, std::vector<std::vector<uint32_t>>& output);
 
-void PrintVector1D(const std::vector<uint32_t>& data, size_t elemsPerLine = 16);
-void PrintVector2D(const std::vector<std::vector<uint32_t>>& data, const uint32_t row, const uint32_t col);
+void PrintBuffer(const std::vector<uint8_t>& vec, size_t perLine = 8);
+void PrintVector1D(const std::vector<uint32_t>& data, const std::string commit = "\" No commit.\"", size_t elemsPerLine = 16);
+void PrintVector2D(const std::vector<std::vector<uint32_t>>& data, const uint32_t row, const uint32_t col, const std::string commit = "\" No commit.\"");
 
 uint32_t GetArrayTotalSize1D(const std::vector<uint32_t> &data);
 uint32_t GetArrayTotalSize2D(const std::vector<std::vector<uint32_t>> &data);

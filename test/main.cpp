@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 18:41:41
+ * @LastEditTime: 2025-07-18 19:00:11
  * @FilePath: \SparseArrayAnalyzer\test\main.cpp
  * @Description:
  *
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     const auto &allModes = CompressorRegistry::Instance().ListAlgorithms();
 
     std::cout << COLOR_STR("==== Compression Comparison Report ====", COLOR_PURPLE) << "\n";
-    std::cout << "Input size: " << data.size() << " elements\n\n";
+    std::cout << "Input size: " << COLOR_BLUE << data.size() << COLOR_RESET << "elements\n\n";
 
     ArrayInput input = (inputDimension == ARRAY_1D) ? ArrayInput{inputData1D }: ArrayInput{inputData2D};
 

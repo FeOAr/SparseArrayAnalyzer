@@ -2,8 +2,8 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-13 15:44:11
- * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_bitmap_payload.cpp
+ * @LastEditTime: 2025-07-18 09:53:14
+ * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_bitpam_payload.cpp
  * @Description:
  *
  */
@@ -54,9 +54,12 @@ int8_t BitmapPayloadEnc::Compress(const ArrayInput &input)
     {
         _arrayType = ARRAY_2D;
         const auto &vec2d = std::get<ArrayData2D>(input);
-
-        _compressedData.rows = vec2d.arrayData.size();
-        _compressedData.cols = (_compressedData.rows > 0) ? vec2d.arrayData[0].size() : 0;
+        
+        // _compressedData.rows = vec2d.arrayData.size();
+        // _compressedData.cols = (_compressedData.rows > 0) ? vec2d.arrayData[0].size() : 0;
+        
+        _compressedData.rows = vec2d.rowCount;
+        _compressedData.cols = vec2d.colCount;
 
         std::vector<uint32_t> flat;
         flat.reserve(_compressedData.rows * _compressedData.cols);
