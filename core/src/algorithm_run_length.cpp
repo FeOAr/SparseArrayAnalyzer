@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-13 15:44:11
+ * @LastEditTime: 2025-07-19 17:09:07
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_run_length.cpp
  * @Description:
  *
@@ -22,7 +22,7 @@ class RunLengthEnc : public SparseArrayCompressor
 {
 public:
     int8_t Compress(const ArrayInput &input) override;
-    int8_t Decompress(ArrayInput &input) override;
+    int8_t Decompress(ArrayInput &output) override;
     int8_t GetResult(CalResult &result) const override;
 
 private:
@@ -49,7 +49,7 @@ int8_t RunLengthEnc::Compress(const ArrayInput &input)
     }
     else if (std::holds_alternative<ArrayData2D>(input))
     {
-        std::cerr << LOG_ERROR << "Input data is unsupported dimension.\n";
+        std::cerr << LOG_WARN << "Input data is unsupported dimension.\n";
         return ERROR_UNSUPPORT_DIMENSION;
     }
     else
@@ -63,6 +63,7 @@ int8_t RunLengthEnc::Compress(const ArrayInput &input)
     auto end = std::chrono::high_resolution_clock::now();
 
     // 2. 计算压缩结果
+    _result.modeName = "RunLengthEnc";
     _result.originElementCount = GetArrayElemCount1D(_inputData1D.arrayData);
     _result.compressedElementCount = _compressedData.size() * 2; // 每个坐标信息包含2个元素：value, count
 
@@ -114,7 +115,7 @@ int8_t RunLengthEnc::startCompress()
     return SAA_SUCCESS;  // 返回值可以根据实际需要调整
 }
 
-int8_t RunLengthEnc::Decompress(ArrayInput &input)
+int8_t RunLengthEnc::Decompress(ArrayInput &output)
 {
     // 0. 检查
     if (_inputData1D.arrayData.empty())
@@ -135,7 +136,7 @@ int8_t RunLengthEnc::Decompress(ArrayInput &input)
         return ERROR_INPUT_EMPTY;
     }
 
-    auto *ptr1d = std::get_if<ArrayData1D>(&input);
+    auto *ptr1d = std::get_if<ArrayData1D>(&output);
     if (!ptr1d)
     {
         std::cerr << LOG_ERROR << "ArrayInput is not compatible with 2D array.\n";

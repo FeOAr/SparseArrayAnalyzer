@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-18 19:00:11
+ * @LastEditTime: 2025-07-19 23:34:22
  * @FilePath: \SparseArrayAnalyzer\test\main.cpp
  * @Description:
  *
@@ -11,6 +11,9 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include "common.h"
 
 // TODO：兼容整形和浮点型
@@ -27,6 +30,62 @@ void printUsage()
     std::cout << "  2: Analyze as 2D array with specified ROWxCOL, eg: <array.txt> 2 9 30\n";
 }
 
+// 适用于整数
+std::string FormatWithUnit(uint32_t value, const std::string &unit, size_t totalWidth)
+{
+    std::ostringstream oss;
+    oss << value << " " << unit;
+    std::string result = oss.str();
+    if (result.size() < totalWidth)
+        result += std::string(totalWidth - result.size(), ' ');
+    return result;
+}
+
+// 适用于浮点数（保留 n 位小数）
+std::string FormatWithUnit(double value, const std::string &unit, size_t totalWidth, int precision = 2)
+{
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(precision) << value << " " << unit;
+    std::string result = oss.str();
+    if (result.size() < totalWidth)
+        result += std::string(totalWidth - result.size(), ' ');
+    return result;
+}
+
+void PrintResultTable(const std::vector<CalResult> &results)
+{
+    // 表头
+    std::cout << std::left
+              << std::setw(24) << "Algorithm"
+              << std::setw(10) << "Count"
+              << std::setw(18) << "Compressed Cnt"
+              << std::setw(15) << "Origin Size"
+              << std::setw(18) << "Compressed Size"
+              << std::setw(18) << "Compress Time"
+              << std::setw(18) << "Decompress Time"
+              << std::setw(10) << "Ratio"
+              << "\n";
+
+    std::cout << std::string(134, '-') << "\n";
+
+    // 每一行输出一个 CalResult
+    for (const auto &result : results)
+    {
+        std::cout << std::left
+                  << std::setw(24) << result.modeName
+                  << std::setw(10) << result.originElementCount
+                  << std::setw(18) << result.compressedElementCount
+                  << FormatWithUnit(result.originSizeBytes, "Byte", 15)
+                  << FormatWithUnit(result.compressedSizeBytes, "Byte", 18)
+                  << FormatWithUnit(result.compressTimeMs, "ms", 18)
+                  << FormatWithUnit(result.decompressTimeMs, "ms", 18)
+                  << FormatWithUnit(result.compressionRatio, "%", 10)
+                  << std::endl;
+    }
+
+    std::cout << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 5)
@@ -41,10 +100,6 @@ int main(int argc, char *argv[])
             std::cout << "Sparse Array Analyzer v1.0.0\n";
             return 0;
         }
-        else if (argv[ARRAY_DIMENSION] && std::string(argv[ARRAY_DIMENSION]) == "1")
-        {
-            ;
-        }
         else
         {
             std::cerr << LOG_ERROR << "Invalid arguments.\n";
@@ -52,13 +107,16 @@ int main(int argc, char *argv[])
             return 0;
         }
     }
-    printf(COLOR_GREEN "======= [Start analyze!] =======" COLOR_RESET "\n");
+
+    std::cout << COLOR_STR("======= [Start analyze!] =======", COLOR_GREEN) << "\n";
 
     // 原始数组
     std::vector<uint32_t> data = LoadArrayFromTxt(argv[FILE_PATH]);
 
     ArrayData1D inputData1D;
     ArrayData2D inputData2D;
+    ArrayData1D outputData1D;
+    ArrayData2D outputData2D;
     ArrayDimension inputDimension = ARRAY_1D;
 
     if (argv[ARRAY_DIMENSION] && std::string(argv[ARRAY_DIMENSION]) == "1")
@@ -74,21 +132,20 @@ int main(int argc, char *argv[])
         printf("Input array is 2D array.\n");
         inputData2D.rowCount = ParseInt(argv[ARRAY_ROW]);
         inputData2D.colCount = ParseInt(argv[ARRAY_COL]);
-        if(ReshapeTo2D(data, inputData2D.rowCount, inputData2D.colCount, inputData2D.arrayData) == SAA_SUCCESS)
+        if (ReshapeTo2D(data, inputData2D.rowCount, inputData2D.colCount, inputData2D.arrayData) == SAA_SUCCESS)
         {
-            std::cout << "Reshape to 2D array successfully.\n";
-            PrintVector2D(inputData2D.arrayData, inputData2D.rowCount, inputData2D.colCount);
+            // PrintVector2D(inputData2D.arrayData, inputData2D.rowCount, inputData2D.colCount);
             inputDimension = ARRAY_2D;
         }
         else
         {
-            std::cerr << "Failed to reshape to 2D array. Please check the input format.\n";
+            std::cout << LOG_ERROR << "Failed to reshape to 2D array. Please check the input format.\n";
             return 1;
         }
     }
     else
     {
-        std::cerr << "Invalid dimension argument. Use 1 for 1D or 2 for 2D.\n";
+        std::cout << LOG_ERROR << "Invalid dimension argument. Use 1 for 1D or 2 for 2D.\n";
         return 1;
     }
 
@@ -106,9 +163,11 @@ int main(int argc, char *argv[])
     const auto &allModes = CompressorRegistry::Instance().ListAlgorithms();
 
     std::cout << COLOR_STR("==== Compression Comparison Report ====", COLOR_PURPLE) << "\n";
-    std::cout << "Input size: " << COLOR_BLUE << data.size() << COLOR_RESET << "elements\n\n";
+    std::cout << "Input size: " << COLOR_STR(std::to_string(data.size()), COLOR_BLUE) << "elements\n\n";
 
-    ArrayInput input = (inputDimension == ARRAY_1D) ? ArrayInput{inputData1D }: ArrayInput{inputData2D};
+    ArrayInput input = (inputDimension == ARRAY_1D) ? ArrayInput{inputData1D} : ArrayInput{inputData2D};
+    ArrayInput output = (inputDimension == ARRAY_1D) ? ArrayInput{outputData1D} : ArrayInput{outputData2D};
+    std::vector<CalResult> results;
 
     // 4. 遍历每种压缩算法进行测试
     for (const auto &mode : allModes)
@@ -127,7 +186,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        ret = compressor->Decompress(input);
+        ret = compressor->Decompress(output);
         if (ret != SAA_SUCCESS)
         {
             std::cerr << LOG_ERROR << "Decompression failed for " << mode << ". Error code: " << static_cast<int>(ret) << "\n";
@@ -135,22 +194,27 @@ int main(int argc, char *argv[])
         }
 
         // TODO: "\n" 和 endl
-        CalResult result;
-        if(compressor->GetResult(result) != SAA_SUCCESS)
+        CalResult rst;
+        if (compressor->GetResult(rst) != SAA_SUCCESS)
         {
-            std::cerr << LOG_ERROR <<"Failed to get compression result for " << mode << ".\n";
+            std::cerr << LOG_ERROR << "Failed to get compression result for " << mode << ".\n";
             continue;
         }
+        results.push_back(rst);
 
-        std::cout << "[ Compressed Mode  ] " << COLOR_STR(mode, COLOR_BLUE) << "\n";
-        std::cout << "  Origin count     : " << result.originElementCount << "\n";
-        std::cout << "  Compressed count : " << result.compressedElementCount << "\n";
-        std::cout << "  Origin size      : " << result.originSizeBytes << " bytes\n";
-        std::cout << "  Compressed Size  : " << result.compressedSizeBytes << " bytes\n";
-        std::cout << "  Compress Time    : " << result.compressTimeMs << " ms\n";
-        std::cout << "  Decompress Time  : " << result.decompressTimeMs << " ms\n";
-        std::cout << "  Ratio            : " << result.compressionRatio << " %\n\n";
+        // TODO: 统一横向打印结果
+        // std::cout << "[ Compressed Mode  ] " << COLOR_STR(mode, COLOR_BLUE) << "\n";
+        // std::cout << "  Origin count     : " << result.originElementCount << "\n";
+        // std::cout << "  Compressed count : " << result.compressedElementCount << "\n";
+        // std::cout << "  Origin size      : " << result.originSizeBytes << " bytes\n";
+        // std::cout << "  Compressed Size  : " << result.compressedSizeBytes << " bytes\n";
+        // std::cout << "  Compress Time    : " << result.compressTimeMs << " ms\n";
+        // std::cout << "  Decompress Time  : " << result.decompressTimeMs << " ms\n";
+        // std::cout << "  Ratio            : " << result.compressionRatio << " %\n\n";
     }
+
+    // 5. 打印所有结果
+    PrintResultTable(results);
     /* ----------------------------------- end ---------------------------------- */
     return 0;
 }

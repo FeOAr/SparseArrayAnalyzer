@@ -2,7 +2,7 @@
  * @Author: 赵航锐 esnasc@163.com
  * @Date: 2025-07-01 09:17:20
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-09 21:18:07
+ * @LastEditTime: 2025-07-19 17:07:37
  * @FilePath: \SparseArrayAnalyzer\core\inc\sparse_array_analyzer.h
  * @Description:
  */
@@ -18,30 +18,6 @@
 #include <functional>
 #include <variant>
 #include <iomanip>
-
-/* ----------------------------------- 流程 ----------------------------------- */
-#if 0
-// 1. 在某处注册算法
-CompressorRegistry::Instance().Register("CoordinateCompression", [](){
-    return std::make_unique<CoordinateCompression>();
-});
-CompressorRegistry::Instance().Register("DenseCompression", [](){
-    return std::make_unique<DenseCompression>();
-});
-
-// 2. 用户选择算法名字，创建实例
-auto compressor = CompressorRegistry::Instance().Create("CoordinateCompression");
-
-// 3. 调用压缩
-compressor->Compress(inputArray);
-
-// 4. 获取结果
-auto result = compressor->GetResult();
-
-// 5. 解压
-auto decompressed = compressor->Decompress();
-#endif
-/* ----------------------------------- end ---------------------------------- */
 
 struct ArrayData1D
 {
@@ -61,7 +37,7 @@ using ArrayInput = std::variant<ArrayData1D, ArrayData2D>;
 typedef struct cal_result
 {
     // TODO: C++17的结构体成员初始化
-    //  名字在map中充当key
+    std::string modeName; // 压缩算法名称
     //  Array element count
     uint32_t originElementCount = 0;     // 原数组元素数量
     uint32_t compressedElementCount = 0; // 压缩后元素数量
@@ -88,7 +64,7 @@ public:
     virtual int8_t Compress(const ArrayInput &input) = 0; // TODO: const + 引用传递
 
     // 解压主入口
-    virtual int8_t Decompress(ArrayInput &input) = 0;
+    virtual int8_t Decompress(ArrayInput &output) = 0;
 
     // 获取压缩结果
     virtual int8_t GetResult(CalResult &result) const = 0; //= 结果不一定只有一个，如一维与二维

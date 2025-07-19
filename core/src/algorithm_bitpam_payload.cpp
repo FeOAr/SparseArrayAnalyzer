@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-18 09:53:14
+ * @LastEditTime: 2025-07-19 16:55:54
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_bitpam_payload.cpp
  * @Description:
  *
@@ -25,7 +25,7 @@ typedef struct bitmap_enc_out
 class BitmapPayloadEnc : public SparseArrayCompressor
 {
     int8_t Compress(const ArrayInput &input) override;
-    int8_t Decompress(ArrayInput &input) override;
+    int8_t Decompress(ArrayInput &output) override;
     int8_t GetResult(CalResult &result) const override;
 
 private:
@@ -81,6 +81,7 @@ int8_t BitmapPayloadEnc::Compress(const ArrayInput &input)
     auto end = std::chrono::high_resolution_clock::now();
 
     // 2. 计算压缩结果
+    _result.modeName = "BitmapPayload";
     _result.originElementCount = GetArrayElemCount1D(_inputData1D.arrayData);
     _result.compressedElementCount = _compressedData.bitmap.size() + _compressedData.valueTable.size() + 4;
 
@@ -116,9 +117,9 @@ int8_t BitmapPayloadEnc::startCompress()
         }
     }
 
-    std::cout << LOG_DEBUG << "Main value: " << _compressedData.mainValue << ", Count: " << mainValueCount << "\n";
+    // std::cout << LOG_DEBUG << "Main value: " << _compressedData.mainValue << ", Count: " << mainValueCount << "\n";
 
-    // 2. 根据主值进行坐标法压缩
+    // 2. 根据主值进行压缩
     _compressedData.bitNum = _inputData1D.arrayData.size();
     uint32_t numBytes = (_compressedData.bitNum + 8 - 1) / 8;
     _compressedData.bitmap.resize(numBytes, 0);
@@ -127,8 +128,8 @@ int8_t BitmapPayloadEnc::startCompress()
     {
         if (_inputData1D.arrayData[i] != _compressedData.mainValue)
         {
-            uint8_t byteIndex = i / 8;
-            uint32_t bitOffset = i % 8;
+            uint32_t byteIndex = i / 8;
+            uint8_t bitOffset = i % 8;
             _compressedData.bitmap[byteIndex] |= (1 << bitOffset);
             _compressedData.valueTable.push_back(_inputData1D.arrayData[i]);
         }
@@ -157,7 +158,7 @@ int8_t BitmapPayloadEnc::startCompress()
     return SAA_SUCCESS; // 返回值可以根据实际需要调整
 }
 
-int8_t BitmapPayloadEnc::Decompress(ArrayInput &input)
+int8_t BitmapPayloadEnc::Decompress(ArrayInput &output)
 {
     // 0. 检查
     if (_inputData1D.arrayData.empty())
@@ -194,7 +195,7 @@ int8_t BitmapPayloadEnc::Decompress(ArrayInput &input)
     // 3. 维度复原
     if (_arrayType == ARRAY_1D)
     {
-        if (auto *ptr1d = std::get_if<ArrayData1D>(&input))
+        if (auto *ptr1d = std::get_if<ArrayData1D>(&output))
         {
             *ptr1d = std::move(tempData);
         }
@@ -206,7 +207,7 @@ int8_t BitmapPayloadEnc::Decompress(ArrayInput &input)
     }
     else if (_arrayType == ARRAY_2D)
     {
-        if (auto *ptr2d = std::get_if<ArrayData2D>(&input))
+        if (auto *ptr2d = std::get_if<ArrayData2D>(&output))
         {
             ArrayData2D out;
             out.arrayData.resize(_compressedData.rows);
@@ -216,6 +217,8 @@ int8_t BitmapPayloadEnc::Decompress(ArrayInput &input)
                     tempData.arrayData.begin() + r * _compressedData.cols,
                     tempData.arrayData.begin() + (r + 1) * _compressedData.cols);
             }
+            out.rowCount = _compressedData.rows;
+            out.colCount = _compressedData.cols;
             *ptr2d = std::move(out);
         }
         else
@@ -232,12 +235,12 @@ int8_t BitmapPayloadEnc::startDecompress(ArrayData1D &outData1D)
 {
     uint32_t valIndex = 0;
 
-    std::cout << LOG_DEBUG << "bitNum: " << _compressedData.bitNum << " bitmap: " << _compressedData.bitmap.size() << "\n";
+    // std::cout << LOG_DEBUG << "bitNum: " << _compressedData.bitNum << " bitmap: " << _compressedData.bitmap.size() << "\n";
 
     for (uint32_t i = 0; i < _compressedData.bitNum; i++)
     {
-        uint8_t byteIndex = i / 8;
-        uint32_t bitOffset = i % 8;
+        uint32_t byteIndex = i / 8;
+        uint8_t bitOffset = i % 8;
 
         bool bitSet = (_compressedData.bitmap[byteIndex] >> bitOffset) & 1;
         if (bitSet)

@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 21:28:22
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-09 21:17:59
+ * @LastEditTime: 2025-07-19 23:36:52
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dense.cpp
  * @Description:
  *
@@ -16,7 +16,7 @@ class DenseStorage : public SparseArrayCompressor
 public:
     int8_t Compress(const ArrayInput &input) override;
 
-    int8_t Decompress(ArrayInput &input) override;
+    int8_t Decompress(ArrayInput &output) override;
 
     int8_t GetResult(CalResult &ret) const override;
 
@@ -49,6 +49,7 @@ int8_t DenseStorage::Compress(const ArrayInput &input)
     }
 
     // 2. 计算压缩结果
+    _result.modeName = "DenseStorage(origin)";
     _result.originElementCount = (_arrayType == ARRAY_1D)
                                      ? GetArrayElemCount1D(_inputData1D.arrayData)
                                      : GetArrayElemCount2D(_inputData2D.arrayData);
@@ -59,16 +60,16 @@ int8_t DenseStorage::Compress(const ArrayInput &input)
     _result.compressedSizeBytes = _result.originSizeBytes;
     _result.compressTimeMs = 0;
     _result.decompressTimeMs = 0;
-    _result.compressionRatio = 1;
+    _result.compressionRatio = 100.0; // 无压缩
 
     return SAA_SUCCESS;
 }
 
-int8_t DenseStorage::Decompress(ArrayInput &input)
+int8_t DenseStorage::Decompress(ArrayInput &output)
 {
     if (_arrayType == ARRAY_1D)
     {
-        if (auto *ptr1d = std::get_if<ArrayData1D>(&input))
+        if (auto *ptr1d = std::get_if<ArrayData1D>(&output))
         {
             ptr1d->arrayData = _inputData1D.arrayData;
         }
@@ -80,7 +81,7 @@ int8_t DenseStorage::Decompress(ArrayInput &input)
     }
     else if (_arrayType == ARRAY_2D)
     {
-        if (auto *ptr2d = std::get_if<ArrayData2D>(&input))
+        if (auto *ptr2d = std::get_if<ArrayData2D>(&output))
         {
             ptr2d->arrayData = _inputData2D.arrayData;
         }

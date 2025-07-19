@@ -1,5 +1,5 @@
-# 模式控制：debug 或 release（默认是 debug）
-BUILD_TYPE ?= debug
+
+BUILD_TYPE ?= release
 
 # 编译器
 CXX := g++
@@ -21,9 +21,11 @@ endif
 # 目录
 CORE_SRC_DIR := core/src
 TEST_SRC_DIR := test
+TOOL_SRC_DIR := tool
 
 CORE_OBJ_DIR := $(OBJ_DIR)/core
 TEST_OBJ_DIR := $(OBJ_DIR)/test
+TOOL_OBJ_DIR := $(OBJ_DIR)/tool
 
 # 所有源文件和目标文件
 CORE_SRCS := $(wildcard $(CORE_SRC_DIR)/*.cpp)
@@ -32,23 +34,38 @@ CORE_OBJS := $(patsubst $(CORE_SRC_DIR)/%.cpp, $(CORE_OBJ_DIR)/%.o, $(CORE_SRCS)
 TEST_SRCS := $(wildcard $(TEST_SRC_DIR)/*.cpp)
 TEST_OBJS := $(patsubst $(TEST_SRC_DIR)/%.cpp, $(TEST_OBJ_DIR)/%.o, $(TEST_SRCS))
 
-TARGET := $(BIN_DIR)/sparse_array_analyzer
+TOOL_SRCS := $(wildcard $(TOOL_SRC_DIR)/*.cpp)
+TOOL_OBJS := $(patsubst $(TOOL_SRC_DIR)/%.cpp, $(TOOL_OBJ_DIR)/%.o, $(TOOL_SRCS))
 
-# 默认目标
-all: $(TARGET)
+ANALYZER_BIN := $(BIN_DIR)/sparse_array_analyzer
+TOOL_BIN := $(BIN_DIR)/generate_sparse_matrix
 
-# 生成最终可执行文件
-$(TARGET): $(CORE_OBJS) $(TEST_OBJS)
+
+all: analyzer tool
+
+# 1. 编译分析器
+analyzer: $(ANALYZER_BIN)
+
+$(ANALYZER_BIN): $(CORE_OBJS) $(TEST_OBJS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $^ -o $@
 
-# 编译 core 源码
 $(CORE_OBJ_DIR)/%.o: $(CORE_SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# 编译 test 源码
 $(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# 2.编译工具源码
+tool: $(TOOL_BIN)
+
+$(TOOL_BIN): $(TOOL_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $^ -o $@
+
+$(TOOL_OBJ_DIR)/%.o: $(TOOL_SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -56,4 +73,4 @@ $(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.cpp
 clean:
 	rm -rf build
 
-.PHONY: all clean
+.PHONY: all clean analyzer tool

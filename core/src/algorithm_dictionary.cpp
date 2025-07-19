@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-18 09:56:29
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-18 19:01:14
+ * @LastEditTime: 2025-07-19 16:39:15
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dictionary.cpp
  * @Description:
  *
@@ -27,7 +27,7 @@ typedef struct compress_dict
 class DictionaryEnc : public SparseArrayCompressor
 {
     int8_t Compress(const ArrayInput &input) override;
-    int8_t Decompress(ArrayInput &input) override;
+    int8_t Decompress(ArrayInput &output) override;
     int8_t GetResult(CalResult &result) const override;
 
 private:
@@ -81,6 +81,7 @@ int8_t DictionaryEnc::Compress(const ArrayInput &input)
     auto end = std::chrono::high_resolution_clock::now();
 
     // 2. 计算压缩结果
+    _result.modeName = "HashDictionary";
     _result.originElementCount = GetArrayElemCount1D(_inputData1D.arrayData);
     _result.compressedElementCount = _compressedData.valueDict.size() + _compressedData.indexBitTable.size() + 4;
 
@@ -99,7 +100,7 @@ int8_t DictionaryEnc::startCompress()
 {
 #if 1
     std::unordered_map<uint32_t, uint32_t> dictMap;
-    std::vector<uint8_t> tempIndexTable;
+    std::vector<uint32_t> tempIndexTable;
 
     _compressedData.originCount = static_cast<uint32_t>(_inputData1D.arrayData.size());
     _compressedData.valueDict.reserve(_inputData1D.arrayData.size());
@@ -162,6 +163,7 @@ int8_t DictionaryEnc::startCompress()
     std::cout << LOG_DEBUG << "Hash Dictionary info: (originCount: " << _compressedData.originCount
               << " originArrayRow: " << _compressedData.originArrayRow
               << " originArrayCol: " << _compressedData.originArrayCol
+              << " bitWidth: " << static_cast<int>(_compressedData.bitWidth)
               << ")\n";
 
     PrintVector1D(_compressedData.valueDict, "_compressedData.valueDict");
@@ -173,7 +175,7 @@ int8_t DictionaryEnc::startCompress()
     return SAA_SUCCESS;
 }
 
-int8_t DictionaryEnc::Decompress(ArrayInput &input)
+int8_t DictionaryEnc::Decompress(ArrayInput &output)
 {
     if (_inputData1D.arrayData.empty())
     {
@@ -211,7 +213,7 @@ int8_t DictionaryEnc::Decompress(ArrayInput &input)
     {
         // PrintVector1D(tempData.arrayData, "Decompressed Array 1D");
 
-        if (auto *ptr1d = std::get_if<ArrayData1D>(&input))
+        if (auto *ptr1d = std::get_if<ArrayData1D>(&output))
         {
             *ptr1d = std::move(tempData);
         }
@@ -223,7 +225,7 @@ int8_t DictionaryEnc::Decompress(ArrayInput &input)
     }
     else if (_arrayType == ARRAY_2D)
     {
-        if (auto *ptr2d = std::get_if<ArrayData2D>(&input))
+        if (auto *ptr2d = std::get_if<ArrayData2D>(&output))
         {
             ArrayData2D out;
             out.arrayData.resize(_compressedData.originArrayRow);

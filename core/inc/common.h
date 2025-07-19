@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 19:33:17
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-18 17:09:40
+ * @LastEditTime: 2025-07-19 23:38:39
  * @FilePath: \SparseArrayAnalyzer\core\inc\common.h
  * @Description: 
  * 
@@ -42,13 +42,13 @@
 #define ENABLE                    (1)
 #define BYPASS                    (0)
 
-#define ALGORITHM_DENSE           (BYPASS)
-#define ALGORITHM_COORDINATE      (BYPASS)
+#define ALGORITHM_DENSE           (ENABLE)
+#define ALGORITHM_COORDINATE      (ENABLE)
 #define ALGORITHM_RUN_LENGTH      (BYPASS)
-#define ALGORITHM_BITMAP_PAYLOAD  (BYPASS)
+#define ALGORITHM_BITMAP_PAYLOAD  (ENABLE)
 #define ALGORITHM_DICTIONARY      (ENABLE)
-#define ALGORITHM_CSR             (BYPASS)
-#define ALGORITHM_CSC             (BYPASS)
+#define ALGORITHM_CSR             (ENABLE)
+#define ALGORITHM_CSC             (ENABLE)
 
 /* -------------------------------- function -------------------------------- */
 typedef enum array_dimension
