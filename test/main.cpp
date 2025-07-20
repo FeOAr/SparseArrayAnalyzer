@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-19 23:34:22
+ * @LastEditTime: 2025-07-20 15:23:49
  * @FilePath: \SparseArrayAnalyzer\test\main.cpp
  * @Description:
  *
@@ -42,7 +42,7 @@ std::string FormatWithUnit(uint32_t value, const std::string &unit, size_t total
 }
 
 // 适用于浮点数（保留 n 位小数）
-std::string FormatWithUnit(double value, const std::string &unit, size_t totalWidth, int precision = 2)
+std::string FormatWithUnit(double value, const std::string &unit, size_t totalWidth, int precision = 3)
 {
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(precision) << value << " " << unit;
