@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-20 15:23:49
+ * @LastEditTime: 2025-08-16 10:13:38
  * @FilePath: \SparseArrayAnalyzer\test\main.cpp
  * @Description:
  *
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
     std::cout << COLOR_STR("======= [Start analyze!] =======", COLOR_GREEN) << "\n";
 
-    // 原始数组
+    // 1. 加载数组数据
     std::vector<uint32_t> data = LoadArrayFromTxt(argv[FILE_PATH]);
 
     ArrayData1D inputData1D;
@@ -149,17 +149,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    /* -------------------------------- main func ------------------------------- */
-    // 1. 加载数组数据
-
-    // 2. 构造参数结构体
-    // SparseArrayCompressor::Params params;
-    // params.dataPtr = reinterpret_cast<const uint8_t *>(data.data());
-    // params.dataSize = static_cast<uint32_t>(data.size() * sizeof(uint32_t));
-    // params.elementSize = sizeof(uint32_t);
-    // params.typeName = "uint32_t";
-
-    // 3. 获取所有已注册算法
+    // 2. 获取所有已注册算法
     const auto &allModes = CompressorRegistry::Instance().ListAlgorithms();
 
     std::cout << COLOR_STR("==== Compression Comparison Report ====", COLOR_PURPLE) << "\n";
@@ -169,7 +159,7 @@ int main(int argc, char *argv[])
     ArrayInput output = (inputDimension == ARRAY_1D) ? ArrayInput{outputData1D} : ArrayInput{outputData2D};
     std::vector<CalResult> results;
 
-    // 4. 遍历每种压缩算法进行测试
+    // 3. 遍历每种压缩算法进行测试
     for (const auto &mode : allModes)
     {
         auto compressor = CompressorRegistry::Instance().Create(mode);
@@ -193,7 +183,6 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        // TODO: "\n" 和 endl
         CalResult rst;
         if (compressor->GetResult(rst) != SAA_SUCCESS)
         {
@@ -201,20 +190,10 @@ int main(int argc, char *argv[])
             continue;
         }
         results.push_back(rst);
-
-        // TODO: 统一横向打印结果
-        // std::cout << "[ Compressed Mode  ] " << COLOR_STR(mode, COLOR_BLUE) << "\n";
-        // std::cout << "  Origin count     : " << result.originElementCount << "\n";
-        // std::cout << "  Compressed count : " << result.compressedElementCount << "\n";
-        // std::cout << "  Origin size      : " << result.originSizeBytes << " bytes\n";
-        // std::cout << "  Compressed Size  : " << result.compressedSizeBytes << " bytes\n";
-        // std::cout << "  Compress Time    : " << result.compressTimeMs << " ms\n";
-        // std::cout << "  Decompress Time  : " << result.decompressTimeMs << " ms\n";
-        // std::cout << "  Ratio            : " << result.compressionRatio << " %\n\n";
     }
 
-    // 5. 打印所有结果
+    // 4. 打印所有结果
     PrintResultTable(results);
-    /* ----------------------------------- end ---------------------------------- */
+
     return 0;
 }

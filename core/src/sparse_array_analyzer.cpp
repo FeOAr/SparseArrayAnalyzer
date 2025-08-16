@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-06-30 20:46:31
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-06 15:30:58
+ * @LastEditTime: 2025-08-16 10:18:12
  * @FilePath: \SparseArrayAnalyzer\core\src\sparse_array_analyzer.cpp
  * @Description:
  *
@@ -19,7 +19,7 @@ CompressorRegistry &CompressorRegistry::Instance()
 
 void CompressorRegistry::Register(const std::string &name, CompressorFactory factory)
 {
-    _factories[name] = std::move(factory);  //TODO: 学习这种操作方式
+    _factories[name] = std::move(factory);
 }
 
 std::unique_ptr<SparseArrayCompressor> CompressorRegistry::Create(const std::string &name) const

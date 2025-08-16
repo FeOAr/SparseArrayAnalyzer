@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-18 09:56:29
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-19 16:39:15
+ * @LastEditTime: 2025-08-16 10:17:34
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_dictionary.cpp
  * @Description:
  *
@@ -124,7 +124,7 @@ int8_t DictionaryEnc::startCompress()
     }
 
     // 2. 压缩索引
-    uint8_t bitWidth = static_cast<uint8_t>(std::ceil(std::log2(dictMap.size()))); // TODOL: ceil 向上取整
+    uint8_t bitWidth = static_cast<uint8_t>(std::ceil(std::log2(dictMap.size())));
     std::vector<uint8_t> packedBits;
     packedBits.reserve((tempIndexTable.size() * bitWidth + 7) / 8); // 精确字节数，也进行了向上取整
 

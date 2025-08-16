@@ -2,7 +2,7 @@
  * @Author: 赵航锐 esnasc@163.com
  * @Date: 2025-07-01 09:17:20
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-19 17:07:37
+ * @LastEditTime: 2025-08-16 10:26:11
  * @FilePath: \SparseArrayAnalyzer\core\inc\sparse_array_analyzer.h
  * @Description:
  */
@@ -36,7 +36,6 @@ using ArrayInput = std::variant<ArrayData1D, ArrayData2D>;
 // 统一分析结果
 typedef struct cal_result
 {
-    // TODO: C++17的结构体成员初始化
     std::string modeName; // 压缩算法名称
     //  Array element count
     uint32_t originElementCount = 0;     // 原数组元素数量
@@ -61,7 +60,7 @@ public:
     virtual ~SparseArrayCompressor() = default;
 
     // 压缩主入口
-    virtual int8_t Compress(const ArrayInput &input) = 0; // TODO: const + 引用传递
+    virtual int8_t Compress(const ArrayInput &input) = 0;
 
     // 解压主入口
     virtual int8_t Decompress(ArrayInput &output) = 0;
@@ -71,15 +70,15 @@ public:
 };
 
 // 工厂注册器
-using CompressorFactory = std::function<std::unique_ptr<SparseArrayCompressor>()>; // TODO: 记录function用法
+using CompressorFactory = std::function<std::unique_ptr<SparseArrayCompressor>()>;
 
 class CompressorRegistry
 {
 public:
-    static CompressorRegistry &Instance(); // TODO: 单例模式， static成员函数
+    static CompressorRegistry &Instance();
 
-    void Register(const std::string &name, CompressorFactory factory);            // TODO: 注册保存function，与算法对象实现分离
-    std::unique_ptr<SparseArrayCompressor> Create(const std::string &name) const; // TODO: 算法对象延迟创建
+    void Register(const std::string &name, CompressorFactory factory);
+    std::unique_ptr<SparseArrayCompressor> Create(const std::string &name) const;
     std::vector<std::string> ListAlgorithms() const;
 
 private:

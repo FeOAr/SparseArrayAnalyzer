@@ -101,8 +101,6 @@ int8_t DenseStorage::GetResult(CalResult &ret) const
     return SAA_SUCCESS;
 }
 
-// 注册到工厂（在 main 或注册器中调用）
-// TODO：这种机制保证只注册一次
 #if ALGORITHM_DENSE
 static bool dense_registered = []
 {

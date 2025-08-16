@@ -122,7 +122,7 @@ void PrintBuffer(const uint8_t* data, size_t size, size_t perLine)
         if ((i + 1) % perLine == 0)
             std::cout << std::endl;
     }
-    std::cout << std::setfill(' ');  // TODO: 流填充恢复
+    std::cout << std::setfill(' ');
 }
 
 void PrintBuffer(const std::vector<uint8_t>& vec, size_t perLine)

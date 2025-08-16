@@ -2,7 +2,7 @@
  * @Author: FeOAr feoar@outlook.com
  * @Date: 2025-07-02 20:30:05
  * @LastEditors: FeOAr feoar@outlook.com
- * @LastEditTime: 2025-07-19 16:09:56
+ * @LastEditTime: 2025-08-16 10:21:00
  * @FilePath: \SparseArrayAnalyzer\core\src\algorithm_coordniate.cpp
  * @Description:
  *
@@ -29,7 +29,7 @@ public:
 
 private:
     int8_t startCompress();
-    int8_t startDecompress(ArrayData2D &output);  // TODO: const这一块不太懂
+    int8_t startDecompress(ArrayData2D &output);
 
     // Input
     ArrayDimension _arrayType;
@@ -86,11 +86,6 @@ int8_t CoordinateList::startCompress()
     uint32_t row = _inputData2D.rowCount;
     uint32_t col = _inputData2D.colCount;
     
-    // 0. 分析数组大小，合理调整成二维结构
-    // uint32_t arrayCount = static_cast<uint32_t>(_inputData.size());
-    // uint32_t tempCol = std::sqrt(arrayCount);
-    // uint32_t tempRow = (arrayCount + tempCol - 1) / tempCol;  // TODO：注意这种向上取整方法
-
     // 1. 分析数组，统计各个值的出现次数
     std::unordered_map<uint32_t, uint32_t> valueCount;
     for (const auto &row : _inputData2D.arrayData)
@@ -103,7 +98,7 @@ int8_t CoordinateList::startCompress()
 
     uint32_t mainValue = 0;  // 主值
     uint32_t mainValueCount = 0;  // 主值出现次数
-    for (const auto &pair : valueCount) //TODO: 记录一下容器遍历的常用办法以及优缺点
+    for (const auto &pair : valueCount)
     {
         if (pair.second > mainValueCount)
         {
